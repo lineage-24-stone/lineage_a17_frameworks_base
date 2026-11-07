@@ -198,7 +198,7 @@ class MobileDataTileUserActionInteractorTest : SysuiTestCase() {
         }
 
     @Test
-    fun handleToggleClick_whenDataIsDisabled_showsDialog() =
+    fun handleToggleClick_whenDataIsDisabled_setsEnabledTrue() =
         testScope.runTest {
             getDataRepo()?.setDataEnabled(false)
 
@@ -209,26 +209,6 @@ class MobileDataTileUserActionInteractorTest : SysuiTestCase() {
                     isAirplaneModeEnabled = false,
                 )
             underTest.handleInput(QSTileInputTestKtx.toggleClick(testData))
-
-            verify(dialogFactory).create()
-            verify(dialog).show()
-        }
-
-    @Test
-    fun dialogPositiveButtonClick_enablesMobileData() =
-        testScope.runTest {
-            getDataRepo()?.setDataEnabled(false)
-            val captor = argumentCaptor<DialogInterface.OnClickListener>()
-            val testData =
-                MobileDataTileModel(
-                    isSimActive = true,
-                    isEnabled = true,
-                    isAirplaneModeEnabled = false,
-                )
-            underTest.handleInput(QSTileInputTestKtx.toggleClick(testData))
-
-            verify(dialog).setPositiveButton(any(), captor.capture())
-            captor.firstValue.onClick(mock(), 0)
             runCurrent()
 
             assertThat(getDataRepo()?.dataEnabled?.value).isTrue()
